@@ -104,13 +104,8 @@ fn whitelist_enabled_after_first_add() {
 
     assert!(!client.is_whitelist_enabled(&issuer, &symbol_short!("ns"), &token));
 
-    let result = client.try_whitelist_add(
-        &issuer,
-        &issuer,
-        &symbol_short!("ns"),
-        &token,
-        &investor,
-    );
+    let result =
+        client.try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &investor);
     assert!(result.is_ok(), "issuer add must succeed, got {result:?}");
 
     assert!(
@@ -146,18 +141,11 @@ fn whitelist_enabled_with_multiple_investors() {
     let a = Address::generate(&env);
     let b = Address::generate(&env);
 
-    assert!(client
-        .try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &a)
-        .is_ok());
-    assert!(client
-        .try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &b)
-        .is_ok());
+    assert!(client.try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &a).is_ok());
+    assert!(client.try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &b).is_ok());
 
     assert!(client.is_whitelist_enabled(&issuer, &symbol_short!("ns"), &token));
-    assert_eq!(
-        client.get_whitelist(&issuer, &symbol_short!("ns"), &token).len(),
-        2
-    );
+    assert_eq!(client.get_whitelist(&issuer, &symbol_short!("ns"), &token).len(), 2);
 }
 
 // ─── 3. Disabling when the map empties ───────────────────────────────────────
@@ -189,12 +177,8 @@ fn whitelist_remains_enabled_while_one_investor_remains() {
     let a = Address::generate(&env);
     let b = Address::generate(&env);
 
-    assert!(client
-        .try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &a)
-        .is_ok());
-    assert!(client
-        .try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &b)
-        .is_ok());
+    assert!(client.try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &a).is_ok());
+    assert!(client.try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &b).is_ok());
     assert!(client
         .try_whitelist_remove(&issuer, &issuer, &symbol_short!("ns"), &token, &a)
         .is_ok());
@@ -203,10 +187,7 @@ fn whitelist_remains_enabled_while_one_investor_remains() {
         client.is_whitelist_enabled(&issuer, &symbol_short!("ns"), &token),
         "one remaining entry is enough to keep enforcement on"
     );
-    assert_eq!(
-        client.get_whitelist(&issuer, &symbol_short!("ns"), &token).len(),
-        1
-    );
+    assert_eq!(client.get_whitelist(&issuer, &symbol_short!("ns"), &token).len(), 1);
     assert!(!client.is_whitelisted(&issuer, &symbol_short!("ns"), &token, &a));
     assert!(client.is_whitelisted(&issuer, &symbol_short!("ns"), &token, &b));
 }
@@ -363,13 +344,8 @@ fn unauthorized_add_does_not_enable_whitelist() {
     let stranger = Address::generate(&env);
     let investor = Address::generate(&env);
 
-    let result = client.try_whitelist_add(
-        &stranger,
-        &issuer,
-        &symbol_short!("ns"),
-        &token,
-        &investor,
-    );
+    let result =
+        client.try_whitelist_add(&stranger, &issuer, &symbol_short!("ns"), &token, &investor);
     assert_eq!(
         result,
         Err(Ok(RevoraError::NotAuthorized)),
@@ -393,13 +369,8 @@ fn add_for_unregistered_offering_does_not_enable_whitelist() {
     let token = Address::generate(&env);
     let investor = Address::generate(&env);
 
-    let result = client.try_whitelist_add(
-        &issuer,
-        &issuer,
-        &symbol_short!("ns"),
-        &token,
-        &investor,
-    );
+    let result =
+        client.try_whitelist_add(&issuer, &issuer, &symbol_short!("ns"), &token, &investor);
     assert_eq!(result, Err(Ok(RevoraError::OfferingNotFound)));
     assert!(!client.is_whitelist_enabled(&issuer, &symbol_short!("ns"), &token));
 }
